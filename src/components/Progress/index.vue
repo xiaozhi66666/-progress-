@@ -1,8 +1,8 @@
 <template>
 <!-- 首先我们封装一个组件肯定是需要考虑到他的结构怎么搭建 -->
  <div>
-     <div class="progress-container"  ref="progressContainer"  :class="[bgc,radiu]">
-    <div class="progress" ref="progress" :class="[status,radiu]"><slot :progress="progress">{{progress}}%</slot></div>
+     <div class="progress-container"  ref="progressContainer"  :class="[bgc,size]">
+    <div class="progress" ref="progress" :class="[size]" :radiu="radiu"><slot :progress="progress">{{showText ? `${progress}%` : ''}}</slot></div>
   </div>
  </div>
 </template>
@@ -13,20 +13,31 @@ export default {
         // 外层容器的背景色
       bgc:{
         type: String,
-        default: 'primary'
+        default: 'primary',
+         validator (value) {
+        // 这个值必须匹配下列字符串中的一个
+        return ['outerSuccess', 'outerPrimary', 'outerDefault'].includes(value)
+      }
       },
       radiu:{
         type: String,
-        default: 'isRadiu'
-      },
-    //  内层进度条的背景色
-      status:{
-        type: String,
-        default: 'default'
+        default: '10px'
       },
       progress:{
         type: String,
-        // default:''
+      },
+      // 尺寸
+      size:{
+        type: String,
+         validator (value) {
+        // 这个值必须匹配下列字符串中的一个
+        return ['large', 'small', 'mini'].includes(value)
+        }
+      },
+      // 是否显示文字
+      showText:{
+        type: Boolean,
+        default:true
       }
 
     },
@@ -36,38 +47,54 @@ export default {
     }
   },
   watch:{
+    // 进度条展示
    progress:{
     handler(newVal){
     this.$nextTick(()=>{
         this.$refs.progress.style.transition ="all 2s"
        this.$refs.progress.style.width = `${newVal}%`
      if(newVal <= 50){
-        // console.log(this.$refs.progress.classList);
    this.$refs.progress.className = 'warning'
         }else if (newVal <=70){ //
-            console.log(70);
             this.$refs.progress.className = 'default'
         }else if(newVal <=80){
-            console.log(80);
             this.$refs.progress.className = 'exception'
         }else if(newVal <=100){
-            console.log(100);
-            // this.$refs.progress.setAttribute("class", "success");\
-
             this.$refs.progress.className = 'success'
-            console.log(this.$refs.progress.className);
+        }else{
+          // 如果不在范围内就强制等于最大值
+          this.progress = 100
+           this.$refs.progress.style.width = `100%`
+          throw('progress请输入合法值');
         }
     })
    },
    immediate:true,
-   }
+   },
+  //  圆角展示
+    radiu:{
+      handler(newVal){
+        if(newVal){
+          this.$nextTick(()=>{
+          this.$refs.progressContainer.style.borderRadius =`${newVal}px`
+          this.$refs.progress.style.borderRadius =`${newVal}px`
+          })
+        }else{
+          this.$nextTick(()=>{
+          this.$refs.progressContainer.style.borderRadius ="0"
+          this.$refs.progress.style.borderRadius ="0"
+          })
+        }
+      },
+      immediate:true
+    }
+
   },
 
   created () {
    
   },
   mounted(){
-    this.$refs.progressContainer.style.backgroundColor = this.bgc
   },
 
   methods: {
@@ -92,41 +119,60 @@ export default {
     height: 100%;
 }
 /* 外层容器背景色 */
-.success{ 
-    background-color: #eee;
+.outerSuccess{ 
+    background-color: #ccc;
 }
-.primary{
-    
-     background-color: #eee;
+.outerPrimary{
+     background-color:darkslategrey;
 }
+.outerDefault{
+  background-color:slategray
+}
+
 
 /* 里层背景色 */
 .default{ 
     height: 100%;
     background-color: #409eff;
-    border-radius:10px;
-    /* transition:all 2s; */
+
 }
 /* 成功 */
 .success{
     height: 100%;
     background-color:#67c23a;
-    border-radius:10px;
-    /* transition:all 2s; */
+
 }
 /* 期望 */
 .exception{
     height: 100%;
     background-color:#e6a23c;
-    border-radius:10px;
-    /* transition:all 2s; */
+
 }
 /* 警告 */
-.warning{height: 100%;background-color:#f56c6c;  border-radius:10px; transition:all 2s;}
-/* 圆角 */
-.isRadiu{
-    border-radius:10px;
+.warning{height: 100%;background-color:#f56c6c}
+
+/* 大小 */
+.large{
+  width: 600px;
+  height: 60px;
+  line-height: 60px;
+
+
 }
+.small{
+  width: 300px;
+  height: 30px;
+  line-height: 30px;
+}
+.mini{
+  width: 150px;
+  height: 15px;
+  line-height: 15px;
+}
+/* 圆角 */
+/* .isRadiu{
+    border-radius:10px;
+} */
 
 
 </style>
