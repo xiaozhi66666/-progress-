@@ -1,6 +1,6 @@
 <template>
   <div>
-   <zz-Progress  radiu="isRadiu" progress=10 status="warning"></zz-Progress>
+   <zz-Progress  radiu="isRadiu" progress=100 status="warning"></zz-Progress>
   </div>
 </template>
 

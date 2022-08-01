@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import App from './App.vue'
-import  zzUI  from './components/Button/'
+import  zzUI  from './components/Progress'
 // 将下述两行代码进行抽离到index.js
 // import zbtn from '../Button/index.vue'
 // Vue.use({
